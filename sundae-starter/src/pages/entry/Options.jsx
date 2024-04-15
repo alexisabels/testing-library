@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-import axios from "axios";
 import { useEffect, useState } from "react";
 import Row from "react-bootstrap/Row";
 import ScoopOption from "./ScoopOption";
@@ -8,6 +6,7 @@ import AlertBanner from "../common/AlertBanner";
 import { pricePerItem } from "../../constants";
 import { formatCurrency } from "../../utilities";
 import { useOrderDetails } from "../../contexts/OrderDetails";
+import axios from "axios";
 
 export default function Options({ optionType }) {
   const [items, setItems] = useState([]);
@@ -16,19 +15,10 @@ export default function Options({ optionType }) {
 
   // optionType is 'scoops' or 'toppings
   useEffect(() => {
-    // create an abortController to attach to network request
-    const controller = new AbortController();
     axios
-      .get(`http://localhost:3030/${optionType}`, { signal: controller.signal })
+      .get(`http://localhost:3030/${optionType}`)
       .then((response) => setItems(response.data))
-      .catch((error) => {
-        if (error.name !== "CanceledError") setError(true);
-      });
-
-    // abort axios call when component is unmounted
-    return () => {
-      controller.abort();
-    };
+      .catch((error) => setError(true));
   }, [optionType]);
 
   if (error) {
